@@ -1,0 +1,139 @@
+#include <stdio.h>
+
+#define MAX 10
+
+void read_matrix(int rows, int cols, int mat[MAX][MAX], const char *name) {
+    printf("Enter elements of matrix %s (%d x %d):\n", name, rows, cols);
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            scanf("%d", &mat[i][j]);
+        }
+    }
+}
+
+void print_matrix(int rows, int cols, int mat[MAX][MAX]) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            printf("%d", mat[i][j]);
+            if (j < cols - 1) {
+                printf(" ");
+            }
+        }
+        printf("\n");
+    }
+}
+
+void add_matrices(int rows, int cols, int a[MAX][MAX], int b[MAX][MAX], int res[MAX][MAX]) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            res[i][j] = a[i][j] + b[i][j];
+        }
+    }
+}
+
+void subtract_matrices(int rows, int cols, int a[MAX][MAX], int b[MAX][MAX], int res[MAX][MAX]) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            res[i][j] = a[i][j] - b[i][j];
+        }
+    }
+}
+
+void transpose_matrix(int rows, int cols, int mat[MAX][MAX], int trans[MAX][MAX]) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            trans[j][i] = mat[i][j];
+        }
+    }
+}
+
+void multiply_matrices(int r1, int c1, int a[MAX][MAX], int c2, int b[MAX][MAX], int res[MAX][MAX]) {
+    for (int i = 0; i < r1; i++) {
+        for (int j = 0; j < c2; j++) {
+            res[i][j] = 0;
+            for (int k = 0; k < c1; k++) {
+                res[i][j] += a[i][k] * b[k][j];
+            }
+        }
+    }
+}
+
+int main(void) {
+    int choice;
+    int a[MAX][MAX], b[MAX][MAX], res[MAX][MAX];
+    int r1, c1, r2, c2;
+
+    while (1) {
+        printf("\n--- Matrix Operations Menu ---\n");
+        printf("1. Addition (A + B)\n");
+        printf("2. Subtraction (A - B)\n");
+        printf("3. Multiplication (A * B)\n");
+        printf("4. Transpose of A\n");
+        printf("5. Exit\n");
+        printf("Enter your choice (1-5): ");
+
+        if (scanf("%d", &choice) != 1) {
+            printf("Invalid input. Exiting.\n");
+            break;
+        }
+
+        if (choice == 5) {
+            printf("Exiting program.\n");
+            break;
+        }
+
+        if (choice == 1 || choice == 2) {
+            printf("Enter rows and columns (max %d): ", MAX);
+            if (scanf("%d %d", &r1, &c1) != 2 || r1 <= 0 || c1 <= 0 || r1 > MAX || c1 > MAX) {
+                printf("Invalid dimensions.\n");
+                continue;
+            }
+            read_matrix(r1, c1, a, "A");
+            read_matrix(r1, c1, b, "B");
+
+            if (choice == 1) {
+                add_matrices(r1, c1, a, b, res);
+                printf("Sum of matrices (A + B):\n");
+            } else {
+                subtract_matrices(r1, c1, a, b, res);
+                printf("Difference of matrices (A - B):\n");
+            }
+            print_matrix(r1, c1, res);
+        } else if (choice == 3) {
+            printf("Enter rows and columns of matrix A (max %d): ", MAX);
+            if (scanf("%d %d", &r1, &c1) != 2 || r1 <= 0 || c1 <= 0 || r1 > MAX || c1 > MAX) {
+                printf("Invalid dimensions.\n");
+                continue;
+            }
+            printf("Enter rows and columns of matrix B (max %d): ", MAX);
+            if (scanf("%d %d", &r2, &c2) != 2 || r2 <= 0 || c2 <= 0 || r2 > MAX || c2 > MAX) {
+                printf("Invalid dimensions.\n");
+                continue;
+            }
+            if (c1 != r2) {
+                printf("Error: Columns of A (%d) must equal rows of B (%d) for multiplication.\n", c1, r2);
+                continue;
+            }
+
+            read_matrix(r1, c1, a, "A");
+            read_matrix(r2, c2, b, "B");
+            multiply_matrices(r1, c1, a, c2, b, res);
+            printf("Product of matrices (A * B):\n");
+            print_matrix(r1, c2, res);
+        } else if (choice == 4) {
+            printf("Enter rows and columns of matrix A (max %d): ", MAX);
+            if (scanf("%d %d", &r1, &c1) != 2 || r1 <= 0 || c1 <= 0 || r1 > MAX || c1 > MAX) {
+                printf("Invalid dimensions.\n");
+                continue;
+            }
+            read_matrix(r1, c1, a, "A");
+            transpose_matrix(r1, c1, a, res);
+            printf("Transpose of matrix A (%d x %d):\n", c1, r1);
+            print_matrix(c1, r1, res);
+        } else {
+            printf("Invalid choice. Please select between 1 and 5.\n");
+        }
+    }
+
+    return 0;
+}
