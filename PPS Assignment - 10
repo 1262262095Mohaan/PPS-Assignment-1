@@ -1,0 +1,82 @@
+#include <stdio.h>
+
+static int is_leap_year(int year) {
+    if (year % 400 == 0) {
+        return 1;
+    }
+    if (year % 100 == 0) {
+        return 0;
+    }
+    return (year % 4 == 0) ? 1 : 0;
+}
+
+static int days_in_month(int month, int year) {
+    static const int days[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    if (month == 2 && is_leap_year(year)) {
+        return 29;
+    }
+    return days[month - 1];
+}
+
+/* Returns day of week for day 1 of the given month/year: 0 = Sunday .. 6 = Saturday */
+static int first_weekday_of_month(int month, int year) {
+    long total_days = 0;
+
+    /* Count days from year 1 up to (year - 1) */
+    for (int y = 1; y < year; y++) {
+        total_days += is_leap_year(y) ? 366L : 365L;
+    }
+
+    /* Count days from January up to (month - 1) in the target year */
+    for (int m = 1; m < month; m++) {
+        total_days += days_in_month(m, year);
+    }
+
+    /* Jan 1, 0001 in proleptic Gregorian calendar was Monday (index 1) */
+    return (int)((1L + total_days) % 7L);
+}
+
+static void print_month(int month, int year) {
+    static const char *const month_names[12] = {
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    };
+
+    int days = days_in_month(month, year);
+    int start_day = first_weekday_of_month(month, year);
+
+    printf("\n------------ %s %d ------------\n", month_names[month - 1], year);
+    printf("Sun  Mon  Tue  Wed  Thu  Fri  Sat\n");
+
+    for (int i = 0; i < start_day; i++) {
+        printf("     ");
+    }
+
+    for (int day = 1; day <= days; day++) {
+        printf("%3d  ", day);
+        if ((start_day + day) % 7 == 0 || day == days) {
+            printf("\n");
+        }
+    }
+}
+
+int main(void) {
+    int year;
+    int ch;
+
+    printf("Enter year (1 or greater): ");
+    if (scanf("%d", &year) != 1 || year < 1) {
+        printf("Invalid year. Please enter a positive integer.\n");
+        while ((ch = getchar()) != '\n' && ch != EOF) {
+            /* discard invalid input */
+        }
+        return 1;
+    }
+
+    printf("\n========== CALENDAR - %d ==========\n", year);
+    for (int month = 1; month <= 12; month++) {
+        print_month(month, year);
+    }
+
+    return 0;
+}
