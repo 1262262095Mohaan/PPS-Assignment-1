@@ -1,0 +1,38 @@
+#include <stdio.h>
+
+static void swap_numbers(int *a, int *b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+static void clear_input_buffer(void) {
+    int ch;
+    while ((ch = getchar()) != '\n' && ch != EOF) {
+        /* discard invalid characters */
+    }
+}
+
+int main(void) {
+    int x, y;
+
+    printf("Enter first number: ");
+    if (scanf("%d", &x) != 1) {
+        printf("Invalid input.\n");
+        clear_input_buffer();
+        return 1;
+    }
+
+    printf("Enter second number: ");
+    if (scanf("%d", &y) != 1) {
+        printf("Invalid input.\n");
+        clear_input_buffer();
+        return 1;
+    }
+
+    printf("\nBefore swap: x = %d, y = %d\n", x, y);
+    swap_numbers(&x, &y);
+    printf("After swap:  x = %d, y = %d\n", x, y);
+
+    return 0;
+}
